@@ -213,32 +213,22 @@
         <span class="close">&times;</span>
         <h2>How to Play</h2>
         <p>
-          <strong>Map Generation:</strong><br />
-          Adjust the parameters in the left column and click "Re-generate
-          Map".<br />
-          The map appears in the right column. Then click "Start Game" below the
-          map to begin.
+          <strong>Map Generation:</strong><br>
+          Adjust the parameters in the left column and click "Re-generate Map".<br>
+          The map appears in the right column. Then click "Start Game" below the map to begin.
         </p>
         <p>
-          <strong>Gameplay:</strong><br />
-          • Control your planets by clicking on them and sending fleets along
-          the connections.<br />
-          • <strong>Upgrade Production (⚙️)</strong>: Costs 5 ships and reduces
-          production interval by 10% per upgrade (max 3).<br />
-          • <strong>Upgrade Shield (🛡)</strong>: Costs 5 ships and increases
-          shield capacity by 5 (max 3). Shields absorb damage first and
-          regenerate 1 point per tick (up to capacity).<br />
-          • When an enemy fleet attacks, shields absorb damage first and an
-          extra ship is consumed during a takeover.<br />
-          • <strong>Auto Send</strong>: Click "Auto Send," then choose two
-          connected planets. The first planet you select (must be yours) will
-          automatically send ships to the second planet. If you select that
-          source planet again (manually), auto sending is paused so ships can
-          build up.<br />
-          Conquer your foes and dominate the cosmos!
+          <strong>Gameplay:</strong><br>
+          • Control your planets by clicking on them and sending fleets along the connections.<br>
+          • <strong>Upgrade Production (⚙️)</strong>: Costs 5 ships and reduces production interval by 10% per upgrade (max 3).<br>
+          • <strong>Upgrade Shield (🛡)</strong>: Costs 5 ships and increases shield capacity by 5 (max 3). Shields absorb damage first and regenerate 1 point per tick (up to capacity).<br>
+          • When an enemy fleet attacks, shields absorb damage first and an extra ship is consumed during a takeover.<br>
+          • <strong>Auto Send (⏩)</strong>: When you select one of your planets, a ⏩ button appears. Click it, then choose a connected planet. Your source planet will automatically send all newly produced ships to the target planet. Selecting the source planet again will pause auto sending so ships can accumulate.<br>
+          <br /><em>Conquer your foes and dominate the cosmos!</em>
         </p>
       </div>
     </div>
+    
 
     <!-- Map Generation Tab -->
     <div id="mapTab" class="tab active">
@@ -276,20 +266,6 @@
 
     <!-- Game Tab -->
     <div id="gameTab" class="tab">
-      <!-- Toolbar at the top of the Game Tab -->
-      <div
-        id="gameToolbar"
-        style="
-          width: 100%;
-          margin-top: 10px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        "
-      >
-        <button id="autoSendButton" class="html-button">Auto Send</button>
-      </div>
-
       <div id="gameContainer">
         <div id="gameCanvasHolder"></div>
         <div
@@ -378,23 +354,30 @@
         upgradeShieldButton.hide();
         upgradeShieldButton.mousePressed(upgradeShield);
 
-        backToMapButton = select("#backToMapButton");
-        backToMapButton.mousePressed(backToMapGeneration);
-
-        // Auto Send Button
-        autoSendButton = select("#autoSendButton");
-        // === CHANGED === Toggle text instead of using alerts
+        // Auto send fleets Button
+        autoSendButton = createButton("⏩");
+        autoSendButton.attribute(
+          "title",
+          "Auto send fleets to the next planet"
+        );
+        autoSendButton.class("upgrade-button");
+        autoSendButton.hide();
         autoSendButton.mousePressed(() => {
           if (!autoSendActive) {
             autoSendActive = true;
-            autoSendPlanet1 = -1;
-            autoSendButton.html("Auto Send [ON]");
+            autoSendPlanet1 = selectedPlanet;
+            autoSendButton.html("✍");
+            autoSendButton.show();
           } else {
             autoSendActive = false;
             autoSendPlanet1 = -1;
-            autoSendButton.html("Auto Send");
+            autoSendButton.html("⏩");
+            autoSendButton.hide();
           }
         });
+
+        backToMapButton = select("#backToMapButton");
+        backToMapButton.mousePressed(backToMapGeneration);
 
         select("#infoButton").mousePressed(openModal);
         select(".close").mousePressed(closeModal);
@@ -445,7 +428,6 @@
       }
 
       function mousePressed() {
-        // If we're in "auto send" mode, pick two planets
         if (autoSendActive) {
           for (let i = 0; i < planets.length; i++) {
             let p = planets[i];
@@ -467,7 +449,8 @@
                 // Turn off auto-send
                 autoSendActive = false;
                 autoSendPlanet1 = -1;
-                autoSendButton.html("Auto Send");
+                autoSendButton.html("⏩");
+                autoSendButton.hide();
               }
               return;
             }
@@ -485,7 +468,7 @@
             if (mouseButton === LEFT) {
               if (selectedPlanet === i) selectedPlanet = null;
               else {
-                if (selectedPlanet === null && p.owner === 1 && p.shipCount > 0)
+                if (selectedPlanet === null && p.owner === 1)
                   selectedPlanet = i;
                 else if (selectedPlanet !== null && selectedPlanet !== i) {
                   if (
@@ -1090,6 +1073,11 @@
               canvasRect.x + offsetX,
               canvasRect.y + offsetY
             );
+            autoSendButton.position(
+              canvasRect.x + offsetX,
+              canvasRect.y + offsetY + 70
+            );
+            autoSendButton.show();
             if (planet.shipCount >= 5 && planet.upgrades < 3)
               upgradeButton.removeClass("disabled");
             else upgradeButton.addClass("disabled");
@@ -1110,6 +1098,7 @@
         } else {
           upgradeButton.hide();
           upgradeShieldButton.hide();
+          autoSendButton.hide();
         }
       }
 
