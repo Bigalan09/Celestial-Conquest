@@ -1,806 +1,786 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Celestial Conquest</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.js"></script>
-    <style>
-      input,
-      label,
-      select,
-      button,
-      textarea {
-        margin: 0;
-        border: 0;
-        padding: 0;
-        display: inline-block;
-        vertical-align: middle;
-        white-space: normal;
-        background: none;
-        line-height: 1;
-        font-size: 13px;
-        font-family: "Orbitron", sans-serif;
-      }
-      input:focus {
-        outline: 0;
-      }
-      /* Box Sizing Reset */
-      input,
-      textarea {
-        -webkit-box-sizing: content-box;
-        -moz-box-sizing: content-box;
-        box-sizing: content-box;
-      }
-      button,
-      input[type="reset"],
-      input[type="button"],
-      input[type="submit"],
-      input[type="checkbox"],
-      input[type="radio"],
-      select {
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-      }
 
-      body {
-        background-color: #0a0a1e;
-        margin: 0;
-        padding: 0;
-        font-family: "Orbitron", sans-serif;
-        color: #e0e0e0;
-        text-align: center;
-        line-height: 1.2;
-      }
-      h1 {
-        margin-top: 20px;
-        font-size: 2.5em;
-        letter-spacing: 2px;
-      }
-      /* Modal Styles */
-      .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0, 0, 0, 0.7);
-      }
-      .modal-content {
-        background-color: #1c1c2e;
-        margin: 15% auto;
-        padding: 20px;
-        border: 2px solid #4caf50;
-        width: 80%;
-        color: #e0e0e0;
-        text-align: left;
-        border-radius: 8px;
-        line-height: 1.7;
-        font-weight: 17px;
-      }
-      .close {
-        color: #e0e0e0;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-        cursor: pointer;
-      }
-      .close:hover,
-      .close:focus {
-        color: #4caf50;
-        text-decoration: none;
-      }
-      /* HTML Button Styles */
-      .html-button {
-        width: 100%;
-        max-width: 325px;
-        padding: 10px;
-        margin: 8px 0;
-        border: 2px solid #4caf50;
-        border-radius: 4px;
-        font-size: 16px;
-        background: linear-gradient(145deg, #1d1d33, #2e2e5a);
-        color: #e0e0e0;
-        cursor: pointer;
-        transition: background 0.3s, transform 0.1s;
-        display: block;
-      }
-      .html-button:hover {
-        background: linear-gradient(145deg, #2e2e5a, #1d1d33);
-      }
-      .html-button:active {
-        transform: scale(0.98);
-      }
+<head>
+  <meta charset="UTF-8" />
+  <title>Celestial Conquest</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.js"></script>
+  <style>
+    input,
+    label,
+    select,
+    button,
+    textarea {
+      margin: 0;
+      border: 0;
+      padding: 0;
+      display: inline-block;
+      vertical-align: middle;
+      white-space: normal;
+      background: none;
+      line-height: 1;
+      font-size: 13px;
+      font-family: "Orbitron", sans-serif;
+    }
 
-      .upgrade-button {
-        min-width: 43px;
-        padding: 5px 8px;
-        border: 2px solid #4caf50;
-        border-radius: 4px;
-        font-size: 16px;
-        background: linear-gradient(145deg, #1d1d33, #2e2e5a);
-        color: #e0e0e0;
-        cursor: pointer;
-        transition: background 0.3s, transform 0.1s;
-        display: block;
-      }
-      .upgrade-button:hover {
-        background: linear-gradient(145deg, #2e2e5a, #1d1d33);
-      }
-      .upgrade-button:active {
-        transform: scale(0.98);
-      }
+    input:focus {
+      outline: 0;
+    }
 
-      /* Specific Info Button Styles */
-      .info-button {
-        position: fixed;
-        bottom: 10px;
-        right: 10px;
-        width: 45px;
-        height: 45px;
-        background-color: #4caf50;
-        border: none;
-        border-radius: 50%;
-        color: white;
-        font-size: 24px;
-        box-shadow: 0 0 8px rgba(76, 175, 80, 0.8);
-      }
-      /* Tab Styles */
-      .tab {
-        display: none;
-      }
-      .tab.active {
-        display: block;
-      }
-      /* Map Generation Layout: 2 Columns */
-      #mapGenerationContainer {
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        width: 99%;
-        margin: 20px auto;
-      }
-      #leftPane {
-        width: 16%;
-        text-align: left;
-        padding: 10px;
-      }
-      #rightPane {
-        width: 84%;
-        padding: 10px;
-      }
-      /* Game Layout: Single Column */
-      #gameContainer {
-        width: 99%;
-        margin: 20px auto;
-      }
-      .input {
-        width: 100%;
-        max-width: 300px;
-        padding: 10px;
-        margin: 8px 0;
-        border: 2px solid #4caf50;
-        border-radius: 4px;
-        font-size: 16px;
-        background: linear-gradient(145deg, #1d1d33, #2e2e5a);
-        color: #e0e0e0;
-        cursor: pointer;
-        transition: background 0.3s, transform 0.1s;
-        background-color: #0a0a1e;
-        border: 2px solid #4caf50;
-        color: #e0e0e0;
-      }
-      .disabled {
-        opacity: 0.5;
-        pointer-events: none;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>🪐 Celestial Conquest</h1>
-    <!-- Fixed Info Button -->
-    <button id="infoButton" class="html-button info-button">?</button>
-    <!-- Modal -->
-    <div id="infoModal" class="modal">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>How to Play</h2>
-        <p>
-          <strong>Map Generation:</strong><br>
-          Adjust the parameters in the left column and click "Re-generate Map".<br>
-          The map appears in the right column. Then click "Start Game" below the map to begin.
-        </p>
-        <p>
-          <strong>Gameplay:</strong><br>
-          • Control your planets by clicking on them and sending fleets along the connections.<br>
-          • <strong>Upgrade Production (⚙️)</strong>: Costs 5 ships and reduces production interval by 10% per upgrade (max 3).<br>
-          • <strong>Upgrade Shield (🛡)</strong>: Costs 5 ships and increases shield capacity by 5 (max 3). Shields absorb damage first and regenerate 1 point per tick (up to capacity).<br>
-          • When an enemy fleet attacks, shields absorb damage first and an extra ship is consumed during a takeover.<br>
-          • <strong>Auto Send (⏩)</strong>: When you select one of your planets, a ⏩ button appears. Click it, then choose a connected planet. Your source planet will automatically send all newly produced ships to the target planet. Selecting the source planet again will pause auto sending so ships can accumulate.<br>
-          <br /><em>Conquer your foes and dominate the cosmos!</em>
-        </p>
+    /* Box Sizing Reset */
+    input,
+    textarea {
+      -webkit-box-sizing: content-box;
+      -moz-box-sizing: content-box;
+      box-sizing: content-box;
+    }
+
+    button,
+    input[type="reset"],
+    input[type="button"],
+    input[type="submit"],
+    input[type="checkbox"],
+    input[type="radio"],
+    select {
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #0a0a1e;
+      margin: 0;
+      padding: 0;
+      font-family: "Orbitron", sans-serif;
+      color: #e0e0e0;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    h1 {
+      margin-top: 20px;
+      font-size: 2.5em;
+      letter-spacing: 2px;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    .modal-content {
+      background-color: #1c1c2e;
+      margin: 15% auto;
+      padding: 20px;
+      border: 2px solid #4caf50;
+      width: 80%;
+      color: #e0e0e0;
+      text-align: left;
+      border-radius: 8px;
+      line-height: 1.7;
+      font-weight: 17px;
+    }
+
+    .close {
+      color: #e0e0e0;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: #4caf50;
+      text-decoration: none;
+    }
+
+    /* HTML Button Styles */
+    .html-button {
+      width: 100%;
+      max-width: 325px;
+      padding: 10px;
+      margin: 8px 0;
+      border: 2px solid #4caf50;
+      border-radius: 4px;
+      font-size: 16px;
+      background: linear-gradient(145deg, #1d1d33, #2e2e5a);
+      color: #e0e0e0;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.1s;
+      display: block;
+    }
+
+    .html-button:hover {
+      background: linear-gradient(145deg, #2e2e5a, #1d1d33);
+    }
+
+    .html-button:active {
+      transform: scale(0.98);
+    }
+
+    .upgrade-button {
+      min-width: 43px;
+      padding: 5px 8px;
+      border: 2px solid #4caf50;
+      border-radius: 4px;
+      font-size: 16px;
+      background: linear-gradient(145deg, #1d1d33, #2e2e5a);
+      color: #e0e0e0;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.1s;
+      display: block;
+    }
+
+    .upgrade-button:hover {
+      background: linear-gradient(145deg, #2e2e5a, #1d1d33);
+    }
+
+    .upgrade-button:active {
+      transform: scale(0.98);
+    }
+
+    /* Specific Info Button Styles */
+    .info-button {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      width: 45px;
+      height: 45px;
+      background-color: #4caf50;
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 24px;
+      box-shadow: 0 0 8px rgba(76, 175, 80, 0.8);
+    }
+
+    /* Tab Styles */
+    .tab {
+      display: none;
+    }
+
+    .tab.active {
+      display: block;
+    }
+
+    /* Map Generation Layout: 2 Columns */
+    #mapGenerationContainer {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      width: 99%;
+      margin: 20px auto;
+    }
+
+    #leftPane {
+      width: 16%;
+      text-align: left;
+      padding: 10px;
+    }
+
+    #rightPane {
+      width: 84%;
+      padding: 10px;
+    }
+
+    /* Game Layout: Single Column */
+    #gameContainer {
+      width: 99%;
+      margin: 20px auto;
+    }
+
+    .input {
+      width: 100%;
+      max-width: 300px;
+      padding: 10px;
+      margin: 8px 0;
+      border: 2px solid #4caf50;
+      border-radius: 4px;
+      font-size: 16px;
+      background: linear-gradient(145deg, #1d1d33, #2e2e5a);
+      color: #e0e0e0;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.1s;
+      background-color: #0a0a1e;
+      border: 2px solid #4caf50;
+      color: #e0e0e0;
+    }
+
+    .disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>🪐 Celestial Conquest</h1>
+  <!-- Fixed Info Button -->
+  <button id="infoButton" class="html-button info-button">?</button>
+  <!-- Modal -->
+  <div id="infoModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>How to Play</h2>
+      <p>
+        <strong>Map Generation:</strong><br>
+        Adjust the parameters in the left column and click "Re-generate Map".<br>
+        The map appears in the right column. Then click "Start Game" below the map to begin.
+      </p>
+      <p>
+        <strong>Gameplay:</strong><br>
+        • Control your planets by clicking on them and sending fleets along the connections.<br>
+        • <strong>Upgrade Production (⚙️)</strong>: Costs 5 ships and reduces production interval by 10% per upgrade
+        (max 3).<br>
+        • <strong>Upgrade Shield (🛡)</strong>: Costs 5 ships and increases shield capacity by 5 (max 3). Shields absorb
+        damage first and regenerate 1 point per tick (up to capacity).<br>
+        • When an enemy fleet attacks, shields absorb damage first and an extra ship is consumed during a takeover.<br>
+        • <strong>Auto Send (⏩)</strong>: When you select one of your planets, a ⏩ button appears. Click it, then choose
+        a connected planet. Your source planet will automatically send all newly produced ships to the target planet.
+        Selecting the source planet again will pause auto sending so ships can accumulate.<br>
+        <br /><em>Conquer your foes and dominate the cosmos!</em>
+      </p>
+    </div>
+  </div>
+
+  <!-- Map Generation Tab -->
+  <div id="mapTab" class="tab active">
+    <div id="mapGenerationContainer">
+      <div id="leftPane" class="controls">
+        <h3>Map Parameters</h3>
+        <p>Number of Planets:</p>
+        <input id="numPlanets" type="text" value="7" class="input" />
+        <p>Min Connections per Planet:</p>
+        <input id="minConn" type="text" value="3" class="input" />
+        <p>Max Connections per Planet:</p>
+        <input id="maxConn" type="text" value="5" class="input" />
+        <p>Min Distance (px):</p>
+        <input id="minDist" type="text" value="175" class="input" />
+        <button id="generateButton" class="html-button">
+          Re-generate Map
+        </button>
+      </div>
+      <div id="rightPane">
+        <div id="mapCanvasHolder"></div>
+        <!-- AI Difficulty Selection -->
+        <div style="width: 100%; margin-top: 10px; display: flex; justify-content: center; align-items: center;">
+          <label for="aiDifficultySelect" style="margin-right: 10px;">AI Difficulty:</label>
+          <select id="aiDifficultySelect" class="input" style="max-width: 150px;">
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+        <div style="width: 100%; margin-top: 10px; display: flex; justify-content: center; align-items: center;">
+          <button id="startGameButton" class="html-button">Start Game</button>
+        </div>
       </div>
     </div>
-    
+  </div>
 
-    <!-- Map Generation Tab -->
-    <div id="mapTab" class="tab active">
-      <div id="mapGenerationContainer">
-        <div id="leftPane" class="controls">
-          <h3>Map Parameters</h3>
-          <p>Number of Planets:</p>
-          <input id="numPlanets" type="text" value="7" class="input" />
-          <p>Min Connections per Planet:</p>
-          <input id="minConn" type="text" value="3" class="input" />
-          <p>Max Connections per Planet:</p>
-          <input id="maxConn" type="text" value="5" class="input" />
-          <p>Min Distance (px):</p>
-          <input id="minDist" type="text" value="175" class="input" />
-          <button id="generateButton" class="html-button">
-            Re-generate Map
-          </button>
-        </div>
-        <div id="rightPane">
-          <div id="mapCanvasHolder"></div>
-          <div
-            style="
-              width: 100%;
-              margin-top: 10px;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-            "
-          >
-            <button id="startGameButton" class="html-button">Start Game</button>
-          </div>
-        </div>
+  <!-- Game Tab -->
+  <div id="gameTab" class="tab">
+    <div id="gameContainer">
+      <div id="gameCanvasHolder"></div>
+      <div id="gameControls" class="controls" style="width: 100%; margin-top: 10px; display: flex; justify-content: center; align-items: center;">
+        <button id="backToMapButton" class="html-button">
+          Back to Map Generation
+        </button>
       </div>
     </div>
+  </div>
 
-    <!-- Game Tab -->
-    <div id="gameTab" class="tab">
-      <div id="gameContainer">
-        <div id="gameCanvasHolder"></div>
-        <div
-          id="gameControls"
-          class="controls"
-          style="
-            width: 100%;
-            margin-top: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-          "
-        >
-          <button id="backToMapButton" class="html-button">
-            Back to Map Generation
-          </button>
-        </div>
-      </div>
-    </div>
+  <script>
+    let planets = [];
+    let connections = [];
+    let fleets = [];
+    let selectedPlanet = null;
+    let numPlanetsInput,
+      minConnInput,
+      maxConnInput,
+      minDistInput,
+      generateButton,
+      startGameButton;
+    const planetRadius = 23;
+    const lineClearance = 17;
+    let canvas;
+    const productionInterval = 3500;
+    const initialShipCount = 3;
+    const fleetSpeed = 0.8;
+    let player1Color, player2Color, neutralColor;
+    const shipIconScale = 1.5;
+    const fleetCollisionDistance = 10;
+    let isGameOver = false;
+    let gameStarted = false;
+    let upgradeButton, upgradeShieldButton, backToMapButton;
 
-    <script>
-      let planets = [];
-      let connections = [];
-      let fleets = [];
-      let selectedPlanet = null;
-      let numPlanetsInput,
-        minConnInput,
-        maxConnInput,
-        minDistInput,
-        generateButton,
-        startGameButton;
-      const planetRadius = 23;
-      const lineClearance = 17;
-      let canvas;
-      const productionInterval = 3500;
-      const initialShipCount = 3;
-      const fleetSpeed = 0.8;
-      let player1Color, player2Color, neutralColor;
-      const shipIconScale = 1.5;
-      const fleetCollisionDistance = 10;
-      let isGameOver = false;
-      let gameStarted = false;
-      let upgradeButton, upgradeShieldButton, backToMapButton;
+    // For auto send
+    let autoSendButton;
+    let autoSendActive = false;
+    let autoSendPlanet1 = -1;
 
-      // For auto send
-      let autoSendButton;
-      let autoSendActive = false;
-      let autoSendPlanet1 = -1;
+    function setup() {
+      let canvasWidth = windowWidth / 3;
+      let canvasHeight = (canvasWidth * 600) / 800;
+      canvas = createCanvas(canvasWidth, canvasHeight);
+      canvas.parent("mapCanvasHolder");
+      player1Color = color(100, 149, 237);
+      player2Color = color(220, 20, 60);
+      neutralColor = color(150);
 
-      function setup() {
-        let canvasWidth = windowWidth / 3;
-        let canvasHeight = (canvasWidth * 600) / 800;
-        canvas = createCanvas(canvasWidth, canvasHeight);
-        canvas.parent("mapCanvasHolder");
-        player1Color = color(100, 149, 237);
-        player2Color = color(220, 20, 60);
-        neutralColor = color(150);
+      numPlanetsInput = select("#numPlanets");
+      minConnInput = select("#minConn");
+      maxConnInput = select("#maxConn");
+      minDistInput = select("#minDist");
+      generateButton = select("#generateButton");
+      startGameButton = select("#startGameButton");
 
-        numPlanetsInput = select("#numPlanets");
-        minConnInput = select("#minConn");
-        maxConnInput = select("#maxConn");
-        minDistInput = select("#minDist");
-        generateButton = select("#generateButton");
-        startGameButton = select("#startGameButton");
+      generateButton.mousePressed(generateMap);
+      startGameButton.mousePressed(startGame);
 
-        generateButton.mousePressed(generateMap);
-        startGameButton.mousePressed(startGame);
+      // Gear (⚙️) Button
+      upgradeButton = createButton("⚙️");
+      upgradeButton.attribute("title", "Upgrade Production (Cost: 5 ships, reduces production interval by 10%)");
+      upgradeButton.class("upgrade-button");
+      upgradeButton.hide();
+      upgradeButton.mousePressed(upgradePlanet);
 
-        // Gear (⚙️) Button
-        upgradeButton = createButton("⚙️");
-        upgradeButton.attribute(
-          "title",
-          "Upgrade Production (Cost: 5 ships, reduces production interval by 10%)"
-        );
-        upgradeButton.class("upgrade-button");
-        upgradeButton.hide();
-        upgradeButton.mousePressed(upgradePlanet);
+      // Shield (🛡) Button
+      upgradeShieldButton = createButton("🛡");
+      upgradeShieldButton.attribute("title", "Upgrade Shield (Cost: 5 ships, adds 5 shield points)");
+      upgradeShieldButton.class("upgrade-button");
+      upgradeShieldButton.hide();
+      upgradeShieldButton.mousePressed(upgradeShield);
 
-        // Shield (🛡) Button
-        upgradeShieldButton = createButton("🛡");
-        upgradeShieldButton.attribute(
-          "title",
-          "Upgrade Shield (Cost: 5 ships, adds 5 shield points)"
-        );
-        upgradeShieldButton.class("upgrade-button");
-        upgradeShieldButton.hide();
-        upgradeShieldButton.mousePressed(upgradeShield);
+      // Auto send fleets Button
+      autoSendButton = createButton("⏩");
+      autoSendButton.attribute("title", "Auto send fleets to the next planet");
+      autoSendButton.class("upgrade-button");
+      autoSendButton.hide();
+      autoSendButton.mousePressed(() => {
+        if (!autoSendActive) {
+          autoSendActive = true;
+          autoSendPlanet1 = selectedPlanet;
+          autoSendButton.html("✍");
+          autoSendButton.show();
+        } else {
+          autoSendActive = false;
+          autoSendPlanet1 = -1;
+          autoSendButton.html("⏩");
+          autoSendButton.hide();
+        }
+      });
 
-        // Auto send fleets Button
-        autoSendButton = createButton("⏩");
-        autoSendButton.attribute(
-          "title",
-          "Auto send fleets to the next planet"
-        );
-        autoSendButton.class("upgrade-button");
-        autoSendButton.hide();
-        autoSendButton.mousePressed(() => {
-          if (!autoSendActive) {
-            autoSendActive = true;
-            autoSendPlanet1 = selectedPlanet;
-            autoSendButton.html("✍");
-            autoSendButton.show();
-          } else {
-            autoSendActive = false;
-            autoSendPlanet1 = -1;
-            autoSendButton.html("⏩");
-            autoSendButton.hide();
-          }
-        });
+      backToMapButton = select("#backToMapButton");
+      backToMapButton.mousePressed(backToMapGeneration);
 
-        backToMapButton = select("#backToMapButton");
-        backToMapButton.mousePressed(backToMapGeneration);
+      select("#infoButton").mousePressed(openModal);
+      select(".close").mousePressed(closeModal);
 
-        select("#infoButton").mousePressed(openModal);
-        select(".close").mousePressed(closeModal);
+      generateMap();
+    }
 
-        generateMap();
-      }
+    function openModal() {
+      select("#infoModal").elt.style.display = "block";
+    }
 
-      function openModal() {
-        select("#infoModal").elt.style.display = "block";
-      }
+    function closeModal() {
+      select("#infoModal").elt.style.display = "none";
+    }
 
-      function closeModal() {
-        select("#infoModal").elt.style.display = "none";
-      }
-
-      function upgradePlanet() {
-        if (selectedPlanet !== null) {
-          let planet = planets[selectedPlanet];
-          if (
-            planet.owner === 1 &&
-            planet.shipCount >= 5 &&
-            planet.upgrades < 3
-          ) {
-            planet.shipCount -= 5;
-            planet.upgrades++;
-            planet.lastProductionTime = millis();
-            upgradeButton.hide();
-          }
+    function upgradePlanet() {
+      if (selectedPlanet !== null) {
+        let planet = planets[selectedPlanet];
+        if (planet.owner === 1 && planet.shipCount >= 5 && planet.upgrades < 3) {
+          planet.shipCount -= 5;
+          planet.upgrades++;
+          planet.lastProductionTime = millis();
+          upgradeButton.hide();
         }
       }
+    }
 
-      function upgradeShield() {
-        if (selectedPlanet !== null) {
-          let planet = planets[selectedPlanet];
-          if (
-            planet.owner === 1 &&
-            planet.shipCount >= 5 &&
-            planet.shieldUpgrades < 3
-          ) {
-            planet.shipCount -= 5;
-            planet.shieldUpgrades++;
-            planet.shieldCapacity += 5;
-            planet.shield = planet.shieldCapacity;
-            planet.lastProductionTime = millis();
-            upgradeShieldButton.hide();
-          }
+    function upgradeShield() {
+      if (selectedPlanet !== null) {
+        let planet = planets[selectedPlanet];
+        if (planet.owner === 1 && planet.shipCount >= 5 && planet.shieldUpgrades < 3) {
+          planet.shipCount -= 5;
+          planet.shieldUpgrades++;
+          planet.shieldCapacity += 5;
+          planet.shield = planet.shieldCapacity;
+          planet.lastProductionTime = millis();
+          upgradeShieldButton.hide();
         }
       }
+    }
 
-      function mousePressed() {
-        if (autoSendActive) {
-          for (let i = 0; i < planets.length; i++) {
-            let p = planets[i];
-            if (dist(mouseX, mouseY, p.x, p.y) < planetRadius) {
-              // If we haven’t chosen planet1 yet...
-              if (autoSendPlanet1 === -1) {
-                // Must be owned by player1
-                if (p.owner === 1) {
-                  autoSendPlanet1 = i;
-                }
-              }
-              // We already picked planet1, so pick planet2
-              else {
-                let source = planets[autoSendPlanet1];
-                // Check if they're connected
-                if (source.connections.includes(i)) {
-                  source.autoTarget = i;
-                }
-                // Turn off auto-send
-                autoSendActive = false;
-                autoSendPlanet1 = -1;
-                autoSendButton.html("⏩");
-                autoSendButton.hide();
-              }
-              return;
-            }
-          }
-          // If we clicked somewhere not on a planet, do nothing
-          return;
-        }
-
-        // Normal planet-click logic
-        let clickedOnPlanet = false;
+    function mousePressed() {
+      if (autoSendActive) {
         for (let i = 0; i < planets.length; i++) {
           let p = planets[i];
           if (dist(mouseX, mouseY, p.x, p.y) < planetRadius) {
-            clickedOnPlanet = true;
-            if (mouseButton === LEFT) {
-              if (selectedPlanet === i) selectedPlanet = null;
-              else {
-                if (selectedPlanet === null && p.owner === 1)
-                  selectedPlanet = i;
-                else if (selectedPlanet !== null && selectedPlanet !== i) {
-                  if (
-                    planets[selectedPlanet].connections.includes(i) &&
-                    planets[selectedPlanet].shipCount > 0
-                  ) {
-                    let source = planets[selectedPlanet];
-                    let fleet = {
-                      x: source.x,
-                      y: source.y,
-                      targetX: p.x,
-                      targetY: p.y,
-                      targetIndex: i,
-                      owner: source.owner,
-                      count: source.shipCount,
-                      speed: fleetSpeed,
-                    };
-                    fleets.push(fleet);
-                    source.shipCount = 0;
-                    source.lastProductionTime = millis();
-                  }
-                  selectedPlanet = null;
-                }
+            if (autoSendPlanet1 === -1) {
+              if (p.owner === 1) {
+                autoSendPlanet1 = i;
               }
+            } else {
+              let source = planets[autoSendPlanet1];
+              if (source.connections.includes(i)) {
+                source.autoTarget = i;
+              }
+              autoSendActive = false;
+              autoSendPlanet1 = -1;
+              autoSendButton.html("⏩");
+              autoSendButton.hide();
             }
-            break;
+            return;
           }
         }
-        if (!clickedOnPlanet) selectedPlanet = null;
+        return;
       }
 
-      function generateMap() {
-        planets = [];
-        connections = [];
-        fleets = [];
-        selectedPlanet = null;
-        isGameOver = false;
-        gameStarted = false;
-        loop();
-        startGameButton.removeAttribute("disabled");
+      let clickedOnPlanet = false;
+      for (let i = 0; i < planets.length; i++) {
+        let p = planets[i];
+        if (dist(mouseX, mouseY, p.x, p.y) < planetRadius) {
+          clickedOnPlanet = true;
+          if (mouseButton === LEFT) {
+            if (selectedPlanet === i) selectedPlanet = null;
+            else {
+              if (selectedPlanet === null && p.owner === 1)
+                selectedPlanet = i;
+              else if (selectedPlanet !== null && selectedPlanet !== i) {
+                if (planets[selectedPlanet].connections.includes(i) && planets[selectedPlanet].shipCount > 0) {
+                  let source = planets[selectedPlanet];
+                  let fleet = {
+                    x: source.x,
+                    y: source.y,
+                    targetX: p.x,
+                    targetY: p.y,
+                    targetIndex: i,
+                    owner: source.owner,
+                    count: source.shipCount,
+                    speed: fleetSpeed,
+                  };
+                  fleets.push(fleet);
+                  source.shipCount = 0;
+                  source.lastProductionTime = millis();
+                }
+                selectedPlanet = null;
+              }
+            }
+          }
+          break;
+        }
+      }
+      if (!clickedOnPlanet) selectedPlanet = null;
+    }
 
-        let numPlanets = int(numPlanetsInput.value());
-        let minConnections = int(minConnInput.value());
-        let maxConnections = int(maxConnInput.value());
-        let minDistance = float(minDistInput.value());
-        let attempts = 0;
+    function generateMap() {
+      planets = [];
+      connections = [];
+      fleets = [];
+      selectedPlanet = null;
+      isGameOver = false;
+      gameStarted = false;
+      loop();
+      startGameButton.removeAttribute("disabled");
 
-        for (let i = 0; i < numPlanets; i++) {
-          let valid = false,
+      let numPlanets = int(numPlanetsInput.value());
+      let minConnections = int(minConnInput.value());
+      let maxConnections = int(maxConnInput.value());
+      let minDistance = float(minDistInput.value());
+      let attempts = 0;
+
+      for (let i = 0; i < numPlanets; i++) {
+        let valid = false,
+          x,
+          y;
+        while (!valid && attempts < 30000) {
+          x = random(planetRadius, width - planetRadius);
+          y = random(planetRadius, height - planetRadius);
+          valid = true;
+          for (let j = 0; j < planets.length; j++) {
+            if (dist(x, y, planets[j].x, planets[j].y) < minDistance) {
+              valid = false;
+              break;
+            }
+          }
+          attempts++;
+        }
+        if (valid) {
+          planets.push({
             x,
-            y;
-          while (!valid && attempts < 30000) {
-            x = random(planetRadius, width - planetRadius);
-            y = random(planetRadius, height - planetRadius);
-            valid = true;
-            for (let j = 0; j < planets.length; j++) {
-              if (dist(x, y, planets[j].x, planets[j].y) < minDistance) {
-                valid = false;
+            y,
+            connections: [],
+            owner: 0,
+            shipCount: 0,
+            lastProductionTime: millis(),
+            upgrades: 0,
+            shieldUpgrades: 0,
+            shieldCapacity: 0,
+            shield: 0,
+            autoTarget: -1,
+            lastAutoSend: 0,
+          });
+        }
+      }
+      if (planets.length < numPlanets) return;
+
+      let remaining = [];
+      for (let i = 0; i < planets.length; i++) remaining.push(i);
+      let visited = [];
+      let startIndex = floor(random(planets.length));
+      visited.push(startIndex);
+      remaining.splice(remaining.indexOf(startIndex), 1);
+
+      while (remaining.length > 0) {
+        let fromIndex = random(visited);
+        let toIndex = random(remaining);
+        if (isValidEdge(fromIndex, toIndex)) {
+          addConnection(fromIndex, toIndex);
+          visited.push(toIndex);
+          remaining.splice(remaining.indexOf(toIndex), 1);
+        } else {
+          let found = false;
+          for (let a of visited) {
+            for (let b of remaining) {
+              if (isValidEdge(a, b)) {
+                addConnection(a, b);
+                visited.push(b);
+                remaining.splice(remaining.indexOf(b), 1);
+                found = true;
                 break;
               }
             }
-            attempts++;
+            if (found) break;
           }
-          if (valid) {
-            planets.push({
-              x,
-              y,
-              connections: [],
-              owner: 0,
-              shipCount: 0,
-              lastProductionTime: millis(),
-              upgrades: 0,
-              shieldUpgrades: 0,
-              shieldCapacity: 0,
-              shield: 0,
-              // Auto-send properties
-              autoTarget: -1,
-              lastAutoSend: 0,
-            });
-          }
+          if (!found) break;
         }
-        if (planets.length < numPlanets) return;
+      }
 
-        let remaining = [];
-        for (let i = 0; i < planets.length; i++) remaining.push(i);
-        let visited = [];
-        let startIndex = floor(random(planets.length));
-        visited.push(startIndex);
-        remaining.splice(remaining.indexOf(startIndex), 1);
-
-        while (remaining.length > 0) {
-          let fromIndex = random(visited);
-          let toIndex = random(remaining);
-          if (isValidEdge(fromIndex, toIndex)) {
-            addConnection(fromIndex, toIndex);
-            visited.push(toIndex);
-            remaining.splice(remaining.indexOf(toIndex), 1);
-          } else {
-            let found = false;
-            for (let a of visited) {
-              for (let b of remaining) {
-                if (isValidEdge(a, b)) {
-                  addConnection(a, b);
-                  visited.push(b);
-                  remaining.splice(remaining.indexOf(b), 1);
-                  found = true;
-                  break;
-                }
-              }
-              if (found) break;
-            }
-            if (!found) break;
-          }
-        }
-
-        let extraAdded = true;
-        while (extraAdded) {
-          extraAdded = false;
-          for (let i = 0; i < planets.length; i++) {
-            if (planets[i].connections.length < minConnections) {
-              let candidates = [];
-              for (let j = 0; j < planets.length; j++) {
-                if (i === j || planets[i].connections.includes(j)) continue;
-                if (planets[j].connections.length >= maxConnections) continue;
-                if (isValidEdge(i, j)) candidates.push(j);
-              }
-              if (candidates.length > 0) {
-                let j = random(candidates);
-                addConnection(i, j);
-                extraAdded = true;
-              }
-            }
-          }
-        }
-
+      let extraAdded = true;
+      while (extraAdded) {
+        extraAdded = false;
         for (let i = 0; i < planets.length; i++) {
-          for (let j = i + 1; j < planets.length; j++) {
-            if (
-              !planets[i].connections.includes(j) &&
-              planets[i].connections.length < maxConnections &&
-              planets[j].connections.length < maxConnections &&
-              isValidEdge(i, j) &&
-              random() < 0.3
-            )
+          if (planets[i].connections.length < minConnections) {
+            let candidates = [];
+            for (let j = 0; j < planets.length; j++) {
+              if (i === j || planets[i].connections.includes(j)) continue;
+              if (planets[j].connections.length >= maxConnections) continue;
+              if (isValidEdge(i, j)) candidates.push(j);
+            }
+            if (candidates.length > 0) {
+              let j = random(candidates);
               addConnection(i, j);
-          }
-        }
-      }
-
-      function startGame() {
-        if (planets.length >= 2) {
-          let minX = Infinity,
-            maxX = -Infinity,
-            idx1 = 0,
-            idx2 = 0;
-          for (let i = 0; i < planets.length; i++) {
-            if (planets[i].x < minX) {
-              minX = planets[i].x;
-              idx1 = i;
-            }
-            if (planets[i].x > maxX) {
-              maxX = planets[i].x;
-              idx2 = i;
+              extraAdded = true;
             }
           }
-          planets[idx1].owner = 1;
-          planets[idx1].shipCount = initialShipCount;
-          planets[idx1].lastProductionTime = millis();
-          if (idx1 === idx2 && planets.length >= 2)
-            idx2 = (idx1 + 1) % planets.length;
-          planets[idx2].owner = 2;
-          planets[idx2].shipCount = initialShipCount;
-          planets[idx2].lastProductionTime = millis();
         }
-        gameStarted = true;
-        startGameButton.attribute("disabled", "");
-        switchTab("gameTab");
-        canvas.parent("gameCanvasHolder");
-        aiTurn();
       }
 
-      function addConnection(i, j) {
-        planets[i].connections.push(j);
-        planets[j].connections.push(i);
-        connections.push({ a: i, b: j });
-      }
-
-      function isValidEdge(i, j) {
-        let pA = planets[i],
-          pB = planets[j];
-        let angle = atan2(pB.y - pA.y, pB.x - pA.x);
-        let offset = planetRadius + lineClearance;
-        let start = {
-          x: pA.x + cos(angle) * offset,
-          y: pA.y + sin(angle) * offset,
-        };
-        let end = {
-          x: pB.x - cos(angle) * offset,
-          y: pB.y - sin(angle) * offset,
-        };
-        for (let k = 0; k < planets.length; k++) {
-          if (k === i || k === j) continue;
-          if (lineIntersectsCircle(start, end, planets[k], planetRadius, 0.5))
-            return false;
+      for (let i = 0; i < planets.length; i++) {
+        for (let j = i + 1; j < planets.length; j++) {
+          if (
+            !planets[i].connections.includes(j) &&
+            planets[i].connections.length < maxConnections &&
+            planets[j].connections.length < maxConnections &&
+            isValidEdge(i, j) &&
+            random() < 0.3
+          )
+            addConnection(i, j);
         }
-        for (let conn of connections) {
-          if (conn.a === i || conn.b === i || conn.a === j || conn.b === j)
-            continue;
-          let otherStart = getConnectionEndpoint(conn.a, conn.b, true);
-          let otherEnd = getConnectionEndpoint(conn.a, conn.b, false);
-          if (segmentsIntersect(start, end, otherStart, otherEnd)) return false;
-        }
-        return true;
       }
+    }
 
-      function getConnectionEndpoint(i, j, first) {
-        let pA = planets[i],
-          pB = planets[j];
-        let angle = atan2(pB.y - pA.y, pB.x - pA.x);
-        let offset = planetRadius + lineClearance;
-        return first
-          ? { x: pA.x + cos(angle) * offset, y: pA.y + sin(angle) * offset }
-          : { x: pB.x - cos(angle) * offset, y: pB.y - sin(angle) * offset };
-      }
-
-      function lineIntersectsCircle(p1, p2, planet, r, buffer) {
-        let effectiveR = r + lineClearance;
-        let d = dist(p1.x, p1.y, p2.x, p2.y);
-        if (d === 0) return false;
-        let u =
-          ((planet.x - p1.x) * (p2.x - p1.x) +
-            (planet.y - p1.y) * (p2.y - p1.y)) /
-          (d * d);
-        u = constrain(u, 0, 1);
-        let closest = {
-          x: p1.x + u * (p2.x - p1.x),
-          y: p1.y + u * (p2.y - p1.y),
-        };
-        let dToCircle = dist(planet.x, planet.y, closest.x, closest.y);
-        return dToCircle < effectiveR - buffer;
-      }
-
-      function segmentsIntersect(p1, p2, p3, p4) {
-        function ccw(A, B, C) {
-          return (C.y - A.y) * (B.x - A.x) > (B.y - A.y) * (C.x - A.x);
-        }
-        return (
-          ccw(p1, p3, p4) !== ccw(p2, p3, p4) &&
-          ccw(p1, p2, p3) !== ccw(p1, p2, p4)
-        );
-      }
-
-      function updateProduction() {
+    function startGame() {
+      if (planets.length >= 2) {
+        let difficulty = select("#aiDifficultySelect").value();
+        let minX = Infinity,
+          maxX = -Infinity,
+          idx1 = 0,
+          idx2 = 0;
         for (let i = 0; i < planets.length; i++) {
-          let p = planets[i];
-          if (p.owner !== 0) {
-            let effectiveInterval = productionInterval * (1 - p.upgrades * 0.1);
-            if (millis() - p.lastProductionTime >= effectiveInterval) {
-              p.shipCount++;
-              p.lastProductionTime = millis();
-              if (p.shieldCapacity > 0 && p.shield < p.shieldCapacity) {
-                p.shield = min(p.shield + 1, p.shieldCapacity);
+          if (planets[i].x < minX) {
+            minX = planets[i].x;
+            idx1 = i;
+          }
+          if (planets[i].x > maxX) {
+            maxX = planets[i].x;
+            idx2 = i;
+          }
+        }
+        planets[idx1].owner = 1;
+        planets[idx1].shipCount = initialShipCount;
+        planets[idx1].lastProductionTime = millis();
+        if (idx1 === idx2 && planets.length >= 2)
+          idx2 = (idx1 + 1) % planets.length;
+        planets[idx2].owner = 2;
+        planets[idx2].shipCount = (difficulty === "hard" ? initialShipCount + 3 : initialShipCount);
+        planets[idx2].lastProductionTime = millis();
+      }
+      gameStarted = true;
+      startGameButton.attribute("disabled", "");
+      switchTab("gameTab");
+      canvas.parent("gameCanvasHolder");
+      aiTurn();
+    }
+
+    function addConnection(i, j) {
+      planets[i].connections.push(j);
+      planets[j].connections.push(i);
+      connections.push({ a: i, b: j });
+    }
+
+    function isValidEdge(i, j) {
+      let pA = planets[i],
+        pB = planets[j];
+      let angle = atan2(pB.y - pA.y, pB.x - pA.x);
+      let offset = planetRadius + lineClearance;
+      let start = {
+        x: pA.x + cos(angle) * offset,
+        y: pA.y + sin(angle) * offset,
+      };
+      let end = {
+        x: pB.x - cos(angle) * offset,
+        y: pB.y - sin(angle) * offset,
+      };
+      for (let k = 0; k < planets.length; k++) {
+        if (k === i || k === j) continue;
+        if (lineIntersectsCircle(start, end, planets[k], planetRadius, 0.5))
+          return false;
+      }
+      for (let conn of connections) {
+        if (conn.a === i || conn.b === i || conn.a === j || conn.b === j)
+          continue;
+        let otherStart = getConnectionEndpoint(conn.a, conn.b, true);
+        let otherEnd = getConnectionEndpoint(conn.a, conn.b, false);
+        if (segmentsIntersect(start, end, otherStart, otherEnd)) return false;
+      }
+      return true;
+    }
+
+    function getConnectionEndpoint(i, j, first) {
+      let pA = planets[i],
+        pB = planets[j];
+      let angle = atan2(pB.y - pA.y, pB.x - pA.x);
+      let offset = planetRadius + lineClearance;
+      return first
+        ? { x: pA.x + cos(angle) * offset, y: pA.y + sin(angle) * offset }
+        : { x: pB.x - cos(angle) * offset, y: pB.y - sin(angle) * offset };
+    }
+
+    function lineIntersectsCircle(p1, p2, planet, r, buffer) {
+      let effectiveR = r + lineClearance;
+      let d = dist(p1.x, p1.y, p2.x, p2.y);
+      if (d === 0) return false;
+      let u = ((planet.x - p1.x) * (p2.x - p1.x) + (planet.y - p1.y) * (p2.y - p1.y)) / (d * d);
+      u = constrain(u, 0, 1);
+      let closest = {
+        x: p1.x + u * (p2.x - p1.x),
+        y: p1.y + u * (p2.y - p1.y),
+      };
+      let dToCircle = dist(planet.x, planet.y, closest.x, closest.y);
+      return dToCircle < effectiveR - buffer;
+    }
+
+    function segmentsIntersect(p1, p2, p3, p4) {
+      function ccw(A, B, C) {
+        return (C.y - A.y) * (B.x - A.x) > (B.y - A.y) * (C.x - A.x);
+      }
+      return (ccw(p1, p3, p4) !== ccw(p2, p3, p4) && ccw(p1, p2, p3) !== ccw(p1, p2, p4));
+    }
+
+    function updateProduction() {
+      let difficulty = select("#aiDifficultySelect").value();
+      let baseBoost = 0;
+      if (difficulty === "medium") {
+        baseBoost = 0.1;
+      } else if (difficulty === "hard") {
+        baseBoost = 0.2;
+      }
+
+      for (let i = 0; i < planets.length; i++) {
+        let p = planets[i];
+        if (p.owner !== 0) {
+          let effectiveInterval = productionInterval * (1 - baseBoost) * (1 - p.upgrades * 0.1);
+          if (millis() - p.lastProductionTime >= effectiveInterval) {
+            p.shipCount++;
+            p.lastProductionTime = millis();
+            if (p.shieldCapacity > 0 && p.shield < p.shieldCapacity) {
+              p.shield = min(p.shield + 1, p.shieldCapacity);
+            }
+          }
+        }
+      }
+    }
+
+    function updateFleets() {
+      for (let i = 0; i < fleets.length; i++) {
+        for (let j = i + 1; j < fleets.length; j++) {
+          if (fleets[i].owner !== fleets[j].owner) {
+            let d = dist(fleets[i].x, fleets[i].y, fleets[j].x, fleets[j].y);
+            if (d < fleetCollisionDistance) {
+              let diff = fleets[i].count - fleets[j].count;
+              if (diff > 0) {
+                fleets[i].count = diff;
+                fleets[j].count = 0;
+              } else if (diff < 0) {
+                fleets[j].count = -diff;
+                fleets[i].count = 0;
+              } else {
+                fleets[i].count = 0;
+                fleets[j].count = 0;
               }
             }
           }
         }
       }
+      fleets = fleets.filter((f) => f.count > 0);
 
-      function updateFleets() {
-        for (let i = 0; i < fleets.length; i++) {
-          for (let j = i + 1; j < fleets.length; j++) {
-            if (fleets[i].owner !== fleets[j].owner) {
-              let d = dist(fleets[i].x, fleets[i].y, fleets[j].x, fleets[j].y);
-              if (d < fleetCollisionDistance) {
-                let diff = fleets[i].count - fleets[j].count;
-                if (diff > 0) {
-                  fleets[i].count = diff;
-                  fleets[j].count = 0;
-                } else if (diff < 0) {
-                  fleets[j].count = -diff;
-                  fleets[i].count = 0;
-                } else {
-                  fleets[i].count = 0;
-                  fleets[j].count = 0;
-                }
+      for (let i = fleets.length - 1; i >= 0; i--) {
+        let f = fleets[i];
+        let dx = f.targetX - f.x;
+        let dy = f.targetY - f.y;
+        let d = sqrt(dx * dx + dy * dy);
+        if (d < 5) {
+          let target = planets[f.targetIndex];
+          if (target.owner === f.owner) {
+            target.shipCount += f.count;
+          } else {
+            let damage = f.count;
+            if (target.shield > 0) {
+              if (damage <= target.shield) {
+                target.shield -= damage;
+                damage = 0;
+              } else {
+                damage -= target.shield;
+                target.shield = 0;
               }
             }
-          }
-        }
-        fleets = fleets.filter((f) => f.count > 0);
-
-        for (let i = fleets.length - 1; i >= 0; i--) {
-          let f = fleets[i];
-          let dx = f.targetX - f.x;
-          let dy = f.targetY - f.y;
-          let d = sqrt(dx * dx + dy * dy);
-          if (d < 5) {
-            let target = planets[f.targetIndex];
-            if (target.owner === f.owner) {
-              target.shipCount += f.count;
-            } else {
-              let damage = f.count;
-              if (target.shield > 0) {
-                if (damage <= target.shield) {
-                  target.shield -= damage;
-                  damage = 0;
-                } else {
-                  damage -= target.shield;
+            if (damage > 0) {
+              if (target.shipCount > damage) {
+                target.shipCount -= damage;
+              } else if (target.shipCount < damage) {
+                let remaining = damage - target.shipCount;
+                if (remaining > 1) {
+                  target.owner = f.owner;
+                  target.shipCount = remaining - 1;
+                  target.lastProductionTime = millis();
+                  target.upgrades = 0;
+                  target.shieldUpgrades = 0;
+                  target.shieldCapacity = 0;
                   target.shield = 0;
-                }
-              }
-              if (damage > 0) {
-                if (target.shipCount > damage) {
-                  target.shipCount -= damage;
-                } else if (target.shipCount < damage) {
-                  let remaining = damage - target.shipCount;
-                  if (remaining > 1) {
-                    target.owner = f.owner;
-                    target.shipCount = remaining - 1;
-                    target.lastProductionTime = millis();
-                    target.upgrades = 0;
-                    target.shieldUpgrades = 0;
-                    target.shieldCapacity = 0;
-                    target.shield = 0;
-                  } else {
-                    target.shipCount = 0;
-                    target.owner = 0;
-                    target.upgrades = 0;
-                    target.shieldUpgrades = 0;
-                    target.shieldCapacity = 0;
-                    target.shield = 0;
-                  }
                 } else {
                   target.shipCount = 0;
                   target.owner = 0;
@@ -809,56 +789,84 @@
                   target.shieldCapacity = 0;
                   target.shield = 0;
                 }
+              } else {
+                target.shipCount = 0;
+                target.owner = 0;
+                target.upgrades = 0;
+                target.shieldUpgrades = 0;
+                target.shieldCapacity = 0;
+                target.shield = 0;
               }
             }
-            fleets.splice(i, 1);
-          } else {
-            let angle = atan2(dy, dx);
-            f.x += cos(angle) * f.speed;
-            f.y += sin(angle) * f.speed;
+          }
+          fleets.splice(i, 1);
+        } else {
+          let angle = atan2(dy, dx);
+          f.x += cos(angle) * f.speed;
+          f.y += sin(angle) * f.speed;
+        }
+      }
+    }
+
+    function updateAutoSend() {
+      let autoSendInterval = 3000;
+      for (let i = 0; i < planets.length; i++) {
+        let p = planets[i];
+        if (i === selectedPlanet) continue;
+        if (p.owner === 1 && p.autoTarget !== -1) {
+          if (millis() - p.lastAutoSend >= autoSendInterval && p.shipCount > 0) {
+            let fleet = {
+              x: p.x,
+              y: p.y,
+              targetX: planets[p.autoTarget].x,
+              targetY: planets[p.autoTarget].y,
+              targetIndex: p.autoTarget,
+              owner: 1,
+              count: p.shipCount,
+              speed: fleetSpeed,
+            };
+            fleets.push(fleet);
+            p.shipCount = 0;
+            p.lastAutoSend = millis();
           }
         }
       }
+    }
 
-      // Periodically auto-send ships from any planet that has a valid autoTarget
-      function updateAutoSend() {
-        let autoSendInterval = 3000; // e.g. 3 seconds
-        for (let i = 0; i < planets.length; i++) {
-          let p = planets[i];
-          // === NEW === If this planet is selected, skip auto-sending (pause)
-          if (i === selectedPlanet) continue;
+    // Improved AI Turn Function
+    function aiTurn() {
+      if (!gameStarted || isGameOver) return;
+      let difficulty = select("#aiDifficultySelect").value();
 
-          // If planet is owned by player1 and has a valid autoTarget
-          if (p.owner === 1 && p.autoTarget !== -1) {
-            // Check if enough time has passed since last auto send
-            if (
-              millis() - p.lastAutoSend >= autoSendInterval &&
-              p.shipCount > 0
-            ) {
-              let fleet = {
-                x: p.x,
-                y: p.y,
-                targetX: planets[p.autoTarget].x,
-                targetY: planets[p.autoTarget].y,
-                targetIndex: p.autoTarget,
-                owner: 1,
-                count: p.shipCount,
-                speed: fleetSpeed,
-              };
-              fleets.push(fleet);
-              p.shipCount = 0;
-              p.lastAutoSend = millis();
+      // Upgrade logic
+      for (let i = 0; i < planets.length; i++) {
+        let p = planets[i];
+        if (p.owner === 2 && p.shipCount >= 5) {
+          if (difficulty === "hard") {
+            if (p.upgrades < 3 && random() < 0.8) {
+              p.shipCount -= 5;
+              p.upgrades++;
+              p.lastProductionTime = millis();
+            } else if (p.shieldUpgrades < 3 && random() < 0.8) {
+              p.shipCount -= 5;
+              p.shieldUpgrades++;
+              p.shieldCapacity += 5;
+              p.shield = p.shieldCapacity;
+              p.lastProductionTime = millis();
             }
-          }
-        }
-      }
-
-      function aiTurn() {
-        if (!gameStarted || isGameOver) return;
-        // AI upgrades: try upgrading with some chance
-        for (let i = 0; i < planets.length; i++) {
-          let p = planets[i];
-          if (p.owner === 2 && p.shipCount >= 5) {
+          } else if (difficulty === "medium") {
+            if (p.upgrades < 3 && random() < 0.35) {
+              p.shipCount -= 5;
+              p.upgrades++;
+              p.lastProductionTime = millis();
+            } else if (p.shieldUpgrades < 3 && random() < 0.35) {
+              p.shipCount -= 5;
+              p.shieldUpgrades++;
+              p.shieldCapacity += 5;
+              p.shield = p.shieldCapacity;
+              p.lastProductionTime = millis();
+            }
+          } else {
             if (p.upgrades < 3 && random() < 0.2) {
               p.shipCount -= 5;
               p.upgrades++;
@@ -872,11 +880,50 @@
             }
           }
         }
+      }
 
-        let moves = [];
+      let moves = [];
+      if (difficulty === "hard") {
+        // Advantage-based move selection for hard mode
         for (let i = 0; i < planets.length; i++) {
           let p = planets[i];
-          if (p.owner === 2 && p.shipCount > 0) {
+          if (p.owner === 2 && p.shipCount > 1) {
+            for (let j of p.connections) {
+              let target = planets[j];
+              if (target.owner !== 2) {
+                let advantage = p.shipCount - target.shipCount;
+                if (advantage > 1) {
+                  moves.push({ sourceIndex: i, targetIndex: j, advantage: advantage });
+                }
+              }
+            }
+          }
+        }
+        moves.sort((a, b) => b.advantage - a.advantage);
+        for (let move of moves) {
+          let source = planets[move.sourceIndex];
+          let target = planets[move.targetIndex];
+          if (source.shipCount > target.shipCount + 1) {
+            let fleet = {
+              x: source.x,
+              y: source.y,
+              targetX: target.x,
+              targetY: target.y,
+              targetIndex: move.targetIndex,
+              owner: 2,
+              count: source.shipCount,
+              speed: fleetSpeed,
+            };
+            fleets.push(fleet);
+            source.shipCount = 0;
+            source.lastProductionTime = millis();
+          }
+        }
+      } else {
+        // Original move selection for easy and medium
+        for (let i = 0; i < planets.length; i++) {
+          let p = planets[i];
+          if (p.owner === 2 && p.shipCount > 1) {
             for (let j of p.connections) {
               if (planets[j].owner !== 2)
                 moves.push({ sourceIndex: i, targetIndex: j });
@@ -901,220 +948,189 @@
           source.shipCount = 0;
           source.lastProductionTime = millis();
         }
-        let delay = random(4000, 9000);
-        setTimeout(aiTurn, delay);
       }
 
-      function draw() {
-        background(10, 10, 30);
-        updateProduction();
-        updateFleets();
-        updateAutoSend(); // call auto-send logic each frame
+      let delay;
+      if (difficulty === "easy") {
+        delay = random(6000, 9000);
+      } else if (difficulty === "medium") {
+        delay = random(3000, 6000);
+      } else if (difficulty === "hard") {
+        delay = random(1000, 2000);
+      }
+      setTimeout(aiTurn, delay);
+    }
 
-        let offset = planetRadius + lineClearance;
+    function draw() {
+      background(10, 10, 30);
+      updateProduction();
+      updateFleets();
+      updateAutoSend();
+
+      let offset = planetRadius + lineClearance;
+      strokeWeight(2);
+      drawingContext.setLineDash([10, 10]);
+
+      for (let conn of connections) {
+        let pA = planets[conn.a],
+          pB = planets[conn.b];
+        let angle = atan2(pB.y - pA.y, pB.x - pA.x);
+        let start = {
+          x: pA.x + cos(angle) * offset,
+          y: pA.y + sin(angle) * offset,
+        };
+        let end = {
+          x: pB.x - cos(angle) * offset,
+          y: pB.y - sin(angle) * offset,
+        };
+
+        if (pA.owner === 1 && pA.autoTarget === conn.b) {
+          stroke(0, 255, 0);
+        } else if (pB.owner === 1 && pB.autoTarget === conn.a) {
+          stroke(0, 255, 0);
+        } else {
+          stroke(150);
+        }
+        line(start.x, start.y, end.x, end.y);
+      }
+      drawingContext.setLineDash([]);
+
+      for (let f of fleets) {
+        push();
+        translate(f.x, f.y);
+        let angle = atan2(f.targetY - f.y, f.targetX - f.x);
+        rotate(angle);
+        noStroke();
+        fill(f.owner === 1 ? player1Color : player2Color);
+        triangle(-3 * shipIconScale, -3 * shipIconScale, -3 * shipIconScale, 3 * shipIconScale, 4 * shipIconScale, 0);
+        textSize(10);
+        fill(255);
+        textAlign(CENTER, CENTER);
+        text(f.count, 0, -10);
+        pop();
+      }
+
+      for (let i = 0; i < planets.length; i++) {
+        let p = planets[i];
+        let fillCol = p.owner === 1 ? player1Color : p.owner === 2 ? player2Color : neutralColor;
+        stroke(255);
         strokeWeight(2);
-        drawingContext.setLineDash([10, 10]);
+        fill(fillCol);
+        ellipse(p.x, p.y, planetRadius * 2);
 
-        // === CHANGED === We'll color lines differently if there's an autoTarget
-        for (let conn of connections) {
-          let pA = planets[conn.a],
-            pB = planets[conn.b];
-          let angle = atan2(pB.y - pA.y, pB.x - pA.x);
-          let start = {
-            x: pA.x + cos(angle) * offset,
-            y: pA.y + sin(angle) * offset,
-          };
-          let end = {
-            x: pB.x - cos(angle) * offset,
-            y: pB.y - sin(angle) * offset,
-          };
-
-          // If planet A auto-target is B, highlight
-          if (pA.owner === 1 && pA.autoTarget === conn.b) {
-            stroke(0, 255, 0); // green line
-          }
-          // Or if planet B auto-target is A, highlight in a different color
-          else if (pB.owner === 1 && pB.autoTarget === conn.a) {
-            stroke(0, 255, 0);
-          } else {
-            stroke(150);
-          }
-          line(start.x, start.y, end.x, end.y);
-        }
-        drawingContext.setLineDash([]);
-
-        for (let f of fleets) {
-          push();
-          translate(f.x, f.y);
-          let angle = atan2(f.targetY - f.y, f.targetX - f.x);
-          rotate(angle);
-          noStroke();
-          fill(f.owner === 1 ? player1Color : player2Color);
-          triangle(
-            -3 * shipIconScale,
-            -3 * shipIconScale,
-            -3 * shipIconScale,
-            3 * shipIconScale,
-            4 * shipIconScale,
-            0
-          );
-          textSize(10);
-          fill(255);
-          textAlign(CENTER, CENTER);
-          text(f.count, 0, -10);
-          pop();
-        }
-
-        for (let i = 0; i < planets.length; i++) {
-          let p = planets[i];
-          let fillCol =
-            p.owner === 1
-              ? player1Color
-              : p.owner === 2
-              ? player2Color
-              : neutralColor;
-          stroke(255);
+        if (selectedPlanet === i) {
+          noFill();
+          stroke(255, 255, 0);
           strokeWeight(2);
-          fill(fillCol);
-          ellipse(p.x, p.y, planetRadius * 2);
+          ellipse(p.x, p.y, planetRadius * 2.5);
+        }
 
-          if (selectedPlanet === i) {
-            noFill();
-            stroke(255, 255, 0);
-            strokeWeight(2);
-            ellipse(p.x, p.y, planetRadius * 2.5);
-          }
-
-          if (p.shipCount > 0 && p.owner !== 0) {
-            let orbitCount = p.shipCount > 10 ? 10 : p.shipCount;
-            let baseAngle = frameCount * 0.025;
-            for (let j = 0; j < orbitCount; j++) {
-              let angle = baseAngle + j * (TWO_PI / orbitCount);
-              let orbitX = p.x + (planetRadius + 8) * cos(angle);
-              let orbitY = p.y + (planetRadius + 8) * sin(angle);
-              push();
-              translate(orbitX, orbitY);
-              rotate(angle + HALF_PI);
-              noStroke();
-              fill(fillCol);
-              triangle(
-                -2 * shipIconScale,
-                -2 * shipIconScale,
-                -2 * shipIconScale,
-                2 * shipIconScale,
-                4 * shipIconScale,
-                0
-              );
-              pop();
-            }
-          }
-
-          let numStr = nf(p.shipCount, 0);
-          let digits = numStr.length;
-          let fontSize = max(9, 18 - (digits - 1) * 2);
-          textSize(fontSize);
-          textAlign(CENTER, CENTER);
-          noStroke();
-          fill(0);
-          text(numStr, p.x, p.y);
-
-          if (p.upgrades > 0) {
-            textSize(16);
-            fill(255, 215, 0);
-            let roman =
-              p.upgrades === 1 ? "I" : p.upgrades === 2 ? "II" : "III";
-            text(roman, p.x, p.y - planetRadius - 10);
-          }
-          if (p.shieldUpgrades > 0) {
-            textSize(14);
-            fill(0, 204, 204);
-            text(
-              "Shield: " + p.shield + "/" + p.shieldCapacity,
-              p.x,
-              p.y + planetRadius + 15
-            );
+        if (p.shipCount > 0 && p.owner !== 0) {
+          let orbitCount = p.shipCount > 10 ? 10 : p.shipCount;
+          let baseAngle = frameCount * 0.025;
+          for (let j = 0; j < orbitCount; j++) {
+            let angle = baseAngle + j * (TWO_PI / orbitCount);
+            let orbitX = p.x + (planetRadius + 8) * cos(angle);
+            let orbitY = p.y + (planetRadius + 8) * sin(angle);
+            push();
+            translate(orbitX, orbitY);
+            rotate(angle + HALF_PI);
+            noStroke();
+            fill(fillCol);
+            triangle(-2 * shipIconScale, -2 * shipIconScale, -2 * shipIconScale, 2 * shipIconScale, 4 * shipIconScale, 0);
+            pop();
           }
         }
 
-        if (gameStarted && !isGameOver) {
-          let bluePlanets = planets.filter((p) => p.owner === 1).length;
-          let redPlanets = planets.filter((p) => p.owner === 2).length;
-          let blueFleets = fleets.filter((f) => f.owner === 1).length;
-          let redFleets = fleets.filter((f) => f.owner === 2).length;
-          if (
-            (redPlanets === 0 && redFleets === 0) ||
-            (bluePlanets === 0 && blueFleets === 0)
-          ) {
-            isGameOver = true;
-            noLoop();
-          }
+        let numStr = nf(p.shipCount, 0);
+        let digits = numStr.length;
+        let fontSize = max(9, 18 - (digits - 1) * 2);
+        textSize(fontSize);
+        textAlign(CENTER, CENTER);
+        noStroke();
+        fill(0);
+        text(numStr, p.x, p.y);
+
+        if (p.upgrades > 0) {
+          textSize(16);
+          fill(255, 215, 0);
+          let roman = p.upgrades === 1 ? "I" : p.upgrades === 2 ? "II" : "III";
+          text(roman, p.x, p.y - planetRadius - 10);
         }
-
-        if (isGameOver) {
-          textSize(32);
-          textAlign(CENTER, CENTER);
-          if (planets.filter((p) => p.owner === 2).length === 0) {
-            fill(0, 255, 0);
-            text("You Won!", width / 2, height / 2);
-          } else {
-            fill(255, 0, 0);
-            text("You Lost!", width / 2, height / 2);
-          }
+        if (p.shieldUpgrades > 0) {
+          textSize(14);
+          fill(0, 204, 204);
+          text("Shield: " + p.shield + "/" + p.shieldCapacity, p.x, p.y + planetRadius + 15);
         }
+      }
 
-        // Show control buttons for the selected planet (if owned by player1)
-        if (selectedPlanet !== null) {
-          let planet = planets[selectedPlanet];
-          if (planet.owner === 1) {
-            let canvasRect = canvas.elt.getBoundingClientRect();
-            let offsetX = planet.x - 20,
-              offsetY = planet.y + planetRadius + 15;
-            upgradeButton.position(
-              canvasRect.x + offsetX,
-              canvasRect.y + offsetY
-            );
-            autoSendButton.position(
-              canvasRect.x + offsetX,
-              canvasRect.y + offsetY + 70
-            );
-            autoSendButton.show();
-            if (planet.shipCount >= 5 && planet.upgrades < 3)
-              upgradeButton.removeClass("disabled");
-            else upgradeButton.addClass("disabled");
-            upgradeButton.show();
+      if (gameStarted && !isGameOver) {
+        let bluePlanets = planets.filter((p) => p.owner === 1).length;
+        let redPlanets = planets.filter((p) => p.owner === 2).length;
+        let blueFleets = fleets.filter((f) => f.owner === 1).length;
+        let redFleets = fleets.filter((f) => f.owner === 2).length;
+        if ((redPlanets === 0 && redFleets === 0) || (bluePlanets === 0 && blueFleets === 0)) {
+          isGameOver = true;
+          noLoop();
+        }
+      }
 
-            upgradeShieldButton.position(
-              canvasRect.x + offsetX,
-              canvasRect.y + offsetY + 35
-            );
-            if (planet.shipCount >= 5 && planet.shieldUpgrades < 3)
-              upgradeShieldButton.removeClass("disabled");
-            else upgradeShieldButton.addClass("disabled");
-            upgradeShieldButton.show();
-          } else {
-            upgradeButton.hide();
-            upgradeShieldButton.hide();
-          }
+      if (isGameOver) {
+        textSize(32);
+        textAlign(CENTER, CENTER);
+        if (planets.filter((p) => p.owner === 2).length === 0) {
+          fill(0, 255, 0);
+          text("You Won!", width / 2, height / 2);
+        } else {
+          fill(255, 0, 0);
+          text("You Lost!", width / 2, height / 2);
+        }
+      }
+
+      if (selectedPlanet !== null) {
+        let planet = planets[selectedPlanet];
+        if (planet.owner === 1) {
+          let canvasRect = canvas.elt.getBoundingClientRect();
+          let offsetX = planet.x - 20,
+            offsetY = planet.y + planetRadius + 15;
+          upgradeButton.position(canvasRect.x + offsetX, canvasRect.y + offsetY);
+          autoSendButton.position(canvasRect.x + offsetX, canvasRect.y + offsetY + 70);
+          autoSendButton.show();
+          if (planet.shipCount >= 5 && planet.upgrades < 3)
+            upgradeButton.removeClass("disabled");
+          else upgradeButton.addClass("disabled");
+          upgradeButton.show();
+
+          upgradeShieldButton.position(canvasRect.x + offsetX, canvasRect.y + offsetY + 35);
+          if (planet.shipCount >= 5 && planet.shieldUpgrades < 3)
+            upgradeShieldButton.removeClass("disabled");
+          else upgradeShieldButton.addClass("disabled");
+          upgradeShieldButton.show();
         } else {
           upgradeButton.hide();
           upgradeShieldButton.hide();
-          autoSendButton.hide();
         }
+      } else {
+        upgradeButton.hide();
+        upgradeShieldButton.hide();
+        autoSendButton.hide();
       }
+    }
 
-      function switchTab(tabId) {
-        select("#mapTab").removeClass("active");
-        select("#gameTab").removeClass("active");
-        select("#" + tabId).addClass("active");
-      }
+    function switchTab(tabId) {
+      select("#mapTab").removeClass("active");
+      select("#gameTab").removeClass("active");
+      select("#" + tabId).addClass("active");
+    }
 
-      function backToMapGeneration() {
-        isGameOver = false;
-        gameStarted = false;
-        generateMap();
-        switchTab("mapTab");
-        canvas.parent("mapCanvasHolder");
-      }
-    </script>
-  </body>
+    function backToMapGeneration() {
+      isGameOver = false;
+      gameStarted = false;
+      generateMap();
+      switchTab("mapTab");
+      canvas.parent("mapCanvasHolder");
+    }
+  </script>
+</body>
+
 </html>
